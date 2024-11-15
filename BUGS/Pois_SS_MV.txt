@@ -48,7 +48,7 @@ B[i,t]~dnorm(EB[i,t], inv.g)
 # observation model likelihood
    for(t in 1:N) {
      for(i in 1:n) {
-       EY[i,t] <- a[i]+B[i,t]
+       log(EY[i,t]) <- a[i]+B[i,t]
        Y[i,t] ~ dpois(EY[i,t])
      }
    }

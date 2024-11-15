@@ -14,8 +14,8 @@ RT = tbl(DAS_con, "ReportingTable") %>%
 dbDisconnect(DAS_con, shutdown = TRUE)
 
 ModelData = RT %>% 
-  filter(LIMS_Group %in% c("FENT", "PFLFENT", "CARFENT"),
-         DateReturned >= "2022-01-01",
+  filter(LIMS_Group %in% c("FENT"),
+         DateReturned >= "2016-01-01",
          DateReturned < "2024-11-01") %>% 
   mutate(Month = floor_date(DateReturned, "month")) %>% 
   count(Month, LIMS_Group) %>% 
@@ -35,7 +35,7 @@ ModelFit <- jags.model(file = "BUGS/Pois_SS_MV.txt",
                                     v = rep(0, length(ModelData)-1)))
 
 Samples = coda.samples(ModelFit, 
-                       variable.names = c("g", "v", "EY"), 
+                       variable.names = c("EY"), 
                        n.iter = 100000)
 coda::traceplot(Samples)
 
@@ -77,5 +77,5 @@ ggplot(ModelData_Out)+
               color = "lightblue",
               fill = "lightblue",
               alpha = 0.5)+
-  facet_wrap(~LIMS, scales = "free_y")+
+  facet_wrap(~LIMS, scales = "free_y", ncol = 1)+
   theme_minimal()
