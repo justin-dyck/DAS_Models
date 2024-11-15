@@ -1,0 +1,17 @@
+model{
+
+for (i in 1:n) {
+	y[i] ~ dnorm(mu[i], tau)
+	mu[i] <- b0 + b1*x1[i] + b2*x2[i]
+	}
+
+	tau ~ dgamma(0.01, 0.01)
+	b0 ~ dnorm(0, 0.001)
+	b1 ~ dnorm(0, 0.001)
+	b2 ~ dnorm(0, 0.001)
+
+
+	s2 <- 1/tau
+	s <- sqrt(s2)
+
+}

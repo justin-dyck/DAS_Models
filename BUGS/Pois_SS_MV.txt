@@ -1,0 +1,55 @@
+model {  
+   
+# process model priors
+#   u ~ dnorm(0, 0.01); # one u
+#   inv.q~dgamma(0.001,0.001)
+#   q <- 1/inv.q; # one q
+#   X0 ~ dnorm(Y1,0.001) # initial state
+   
+# process model likelihood
+#   EX[1] <- X0 + u;
+#   X[1] ~ dnorm(EX[1], inv.q);
+#   for(t in 2:N) {
+#         EX[t] <- X[t-1] + u;
+#         X[t] ~ dnorm(EX[t], inv.q)
+#   }
+
+   
+# observation model priors
+   
+   a[1] <- 0; # first a is 0, rest estimated
+   for(i in 2:n) {
+     a[i]~dnorm(0,0.001)
+   }   
+
+for(i in 1:n){
+v[i] ~ dnorm(0, 0.01)
+B0[i] ~ dnorm(Y1, 0.001)
+}
+
+inv.g ~ dgamma(0.001, 0.001)
+g <- 1/inv.g
+
+for(i in 1:n){
+EB[i,1] <- B0[i] + v[i]
+B[i,1] ~ dnorm(EB[i,1], inv.g)
+}
+
+for(t in 2:N) {
+     for(i in 1:n) {
+
+EB[i,t] <- B[i, t-1] + v[i]
+B[i,t]~dnorm(EB[i,t], inv.g)
+
+
+}
+}
+   
+# observation model likelihood
+   for(t in 1:N) {
+     for(i in 1:n) {
+       EY[i,t] <- a[i]+B[i,t]
+       Y[i,t] ~ dpois(EY[i,t])
+     }
+   }
+} 
